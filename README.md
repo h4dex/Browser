@@ -1,5 +1,5 @@
 # DuiLib
-  Duilib是一个Windows下免费开源的DirectUI界面库。<br />
+  [Duilib](https://github.com/duilib/duilib)是一个Windows下免费开源的DirectUI界面库。<br />
   当前版是DuiLib_Ultimate的定制版，主要做演示用，不定时更新。<br />
   [Duilib](https://github.com/duilib/duilib)<br />
   [DuiLib_Ultimate](https://github.com/qdtroy/DuiLib_Ultimate)<br />
