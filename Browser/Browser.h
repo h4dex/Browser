@@ -35,8 +35,7 @@ private:
 	CLabelUI* labTitle;
 	CControlUI* uiToolbar;
 	CEditUI* editUrl;
-	CButtonUI* btnHome;
-	CButtonUI* btnConfig;
+	CEditUI* editKeyword;
 	CBrowserUI* mBrowser;
 	CDuiString sHomepage;
 	CDuiString m_sUrl;

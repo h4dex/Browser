@@ -65,8 +65,7 @@ CBrowserDlg::CBrowserDlg(BOOL bPopup,LPCTSTR sUrl)
 	labTitle = NULL;
 	uiToolbar = NULL;
 	editUrl = NULL;
-	btnHome = NULL;
-	btnConfig = NULL;
+	editKeyword = NULL;
 	m_bPopup = bPopup;
 	sHomepage = _T("https://www.baidu.com/");
 	if(sUrl==NULL)
@@ -94,10 +93,9 @@ void CBrowserDlg::InitWindow()
 	labTitle = static_cast<CLabelUI*>(m_pm.FindControl(_T("labTitle")));
 	uiToolbar = static_cast<CControlUI*>(m_pm.FindControl(_T("uiToolbar")));
 	editUrl = static_cast<CEditUI*>(m_pm.FindControl(_T("editUrl")));
-	btnHome = static_cast<CButtonUI*>(m_pm.FindControl(_T("btnHome")));
-	btnConfig = static_cast<CButtonUI*>(m_pm.FindControl(_T("btnConfig")));
+	editKeyword = static_cast<CEditUI*>(m_pm.FindControl(_T("editKeyword")));
 	mBrowser = static_cast<CBrowserUI*>(m_pm.FindControl(_T("mBrowser")));
-	if (labTitle == NULL || uiToolbar == NULL || editUrl == NULL || btnHome == NULL || btnConfig == NULL || mBrowser == NULL)
+	if (labTitle == NULL || uiToolbar == NULL || editUrl == NULL || editKeyword == NULL || mBrowser == NULL)
 	{
 		MessageBox(NULL,_T("加载资源文件失败"),_T("Browser"),MB_OK|MB_ICONERROR);
 		return;
@@ -153,15 +151,53 @@ void CBrowserDlg::Notify(TNotifyUI& msg)
 	}
 	else if (_tcsicmp(msg.sType,_T("click")) == 0)
 	{
-		if (_tcsicmp(sCtrlName,_T("btnHome")) == 0){
+		if (_tcsicmp(sCtrlName,_T("btnGoto")) == 0){//跳转
+			if(mBrowser){
+				CDuiString sAddr;
+				CDuiString sUrl = editUrl->GetText();
+				if(sUrl.Find(_T("http://")) >= 0 || sUrl.Find(_T("https://")) >= 0){
+					sAddr = sUrl;
+				}else{
+					sAddr.Format(_T("http://%s"),sUrl.GetData());
+				}
+				editUrl->SetText(sAddr);
+				mBrowser->LoadURL(sAddr.GetData());
+			}
+			return;
+		}else if (_tcsicmp(sCtrlName,_T("btnSearch")) == 0){//搜索
+			if(mBrowser){
+				CDuiString sAddr,sKeyword = editKeyword->GetText();
+				sAddr.Format(_T("https://www.baidu.com/s?wd=%s"),sKeyword.GetData());
+				editUrl->SetText(sAddr);
+				//editKeyword->SetText(_T(""));
+				mBrowser->LoadURL(sAddr.GetData());
+			}
+			return;
+		}else if (_tcsicmp(sCtrlName,_T("btnHome")) == 0){//主页
 			if(mBrowser){
 				editUrl->SetText(sHomepage);
 				mBrowser->LoadURL(sHomepage.GetData());
 			}
 			return;
-		}else if (_tcsicmp(sCtrlName,_T("btnConfig")) == 0){
+		}else if (_tcsicmp(sCtrlName,_T("btnSettings")) == 0){
+			CDuiString sUrl = _T("about:settings");
 			if(mBrowser){
-				mBrowser->LoadURL(_T("about:config"));
+				editUrl->SetText(sUrl);
+				mBrowser->LoadURL(sUrl.GetData());
+			}
+			return;
+		}else if (_tcsicmp(sCtrlName,_T("btnMusic")) == 0){//音乐
+			CDuiString sUrl = _T("http://fm.baidu.com");
+			if(mBrowser){
+				editUrl->SetText(sUrl);
+				mBrowser->LoadURL(sUrl.GetData());
+			}
+			return;
+		}else if (_tcsicmp(sCtrlName,_T("btnInfo")) == 0){
+			CDuiString sUrl = _T("http://www.sanwer.com");
+			if(mBrowser){
+				editUrl->SetText(sUrl);
+				mBrowser->LoadURL(sUrl.GetData());
 			}
 			return;
 		}
@@ -169,16 +205,26 @@ void CBrowserDlg::Notify(TNotifyUI& msg)
 	else if (_tcsicmp(msg.sType,DUI_MSGTYPE_RETURN) == 0)
 	{
 		if (_tcsicmp(sCtrlName,_T("editUrl")) == 0){
-			CDuiString sAddr;
-			CDuiString sUrl = editUrl->GetText();
-			if(sUrl.Find(_T("http://")) >= 0 || sUrl.Find(_T("https://")) >= 0){
-				sAddr = sUrl;
-			}else{
-				sAddr.Format(_T("http://%s"),sUrl.GetData());
-			}
-			editUrl->SetText(sAddr);
-			if(mBrowser)
+			if(mBrowser){
+				CDuiString sAddr;
+				CDuiString sUrl = editUrl->GetText();
+				if(sUrl.Find(_T("http://")) >= 0 || sUrl.Find(_T("https://")) >= 0){
+					sAddr = sUrl;
+				}else{
+					sAddr.Format(_T("http://%s"),sUrl.GetData());
+				}
+				editUrl->SetText(sAddr);
 				mBrowser->LoadURL(sAddr.GetData());
+			}
+			return;
+		}else if (_tcsicmp(sCtrlName,_T("editKeyword")) == 0){
+			if(mBrowser){
+				CDuiString sAddr,sKeyword = editKeyword->GetText();
+				sAddr.Format(_T("https://www.baidu.com/s?wd=%s"),sKeyword.GetData());
+				editUrl->SetText(sAddr);
+				//editKeyword->SetText(_T(""));
+				mBrowser->LoadURL(sAddr.GetData());
+			}
 			return;
 		}
 	}
