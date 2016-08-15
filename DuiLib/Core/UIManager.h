@@ -2,7 +2,7 @@
 #define __UIMANAGER_H__
 
 #pragma once
-
+#define WM_USER_SET_DPI WM_USER + 200
 namespace DuiLib {
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
@@ -52,11 +52,16 @@ namespace DuiLib {
 		UIEVENT_WINDOWSIZE,
 		UIEVENT_SETCURSOR,
 		UIEVENT_TIMER,
-		UIEVENT_NOTIFY,
-		UIEVENT_COMMAND,
 		UIEVENT__LAST,
 	};
 
+	typedef enum MSGTYPE_UI
+	{
+		// 内部保留消息
+		UIMSG_TRAYICON = WM_USER + 1,
+		// 程序自定义消息
+		UIMSG_USER = WM_USER + 100,
+	};
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
@@ -115,7 +120,7 @@ namespace DuiLib {
 	typedef struct UILIB_API tagTDrawInfo
 	{
 		tagTDrawInfo();
-		void Parse(LPCTSTR pStrImage, LPCTSTR pStrModify);
+		void Parse(LPCTSTR pStrImage, LPCTSTR pStrModify, CPaintManagerUI *paintManager);
 		void Clear();
 
 		CDuiString sDrawString;
@@ -423,6 +428,12 @@ namespace DuiLib {
 		static bool TranslateMessage(const LPMSG pMsg);
 		static void Term();
 
+		CDPI* GetDPIObj();
+		void ResetDPIAssets();
+		void RebuildFont(TFontInfo* pFontInfo);
+		void SetDPI(int iDPI);
+		static void SetAllDPI(int iDPI);
+
 		bool MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
 		bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
 		void UsedVirtualWnd(bool bUsed);
@@ -452,6 +463,8 @@ namespace DuiLib {
 		BYTE* m_pOffscreenBits;
 		HBITMAP m_hbmpBackground;
 		COLORREF* m_pBackgroundBits;
+
+		CDPI* m_pDPI;
 
 		bool m_bShowUpdateRect;
 		// 是否开启Gdiplus

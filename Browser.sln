@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Browser", "Browser\Browser.vcxproj", "{E59198AF-B45C-412D-9077-5EF79A13241D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B452A441-F77A-39CB-8624-8EF3BD1B6C1A} = {B452A441-F77A-39CB-8624-8EF3BD1B6C1A}
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E} = {E106ACD7-4E53-4AEE-942B-D0DD426DB34E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DuiLib", "DuiLib\DuiLib.vcxproj", "{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcef_dll_wrapper", "libcef_dll\libcef_dll_wrapper.vcxproj", "{B452A441-F77A-39CB-8624-8EF3BD1B6C1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E59198AF-B45C-412D-9077-5EF79A13241D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E59198AF-B45C-412D-9077-5EF79A13241D}.Debug|Win32.Build.0 = Debug|Win32
+		{E59198AF-B45C-412D-9077-5EF79A13241D}.Release|Win32.ActiveCfg = Release|Win32
+		{E59198AF-B45C-412D-9077-5EF79A13241D}.Release|Win32.Build.0 = Release|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Debug|Win32.Build.0 = Debug|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Release|Win32.ActiveCfg = Release|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Release|Win32.Build.0 = Release|Win32
+		{B452A441-F77A-39CB-8624-8EF3BD1B6C1A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B452A441-F77A-39CB-8624-8EF3BD1B6C1A}.Debug|Win32.Build.0 = Debug|Win32
+		{B452A441-F77A-39CB-8624-8EF3BD1B6C1A}.Release|Win32.ActiveCfg = Release|Win32
+		{B452A441-F77A-39CB-8624-8EF3BD1B6C1A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

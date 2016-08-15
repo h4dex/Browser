@@ -26,8 +26,14 @@ namespace DuiLib
 	{
 		m_bDelayedDestroy = false;
 		RemoveAll();
-		if( m_pVerticalScrollBar ) delete m_pVerticalScrollBar;
-		if( m_pHorizontalScrollBar ) delete m_pHorizontalScrollBar;
+		if( m_pVerticalScrollBar ) {
+			delete m_pVerticalScrollBar;
+			m_pVerticalScrollBar = NULL;
+		}
+		if( m_pHorizontalScrollBar ) {
+			delete m_pHorizontalScrollBar;
+			m_pHorizontalScrollBar = NULL;
+		}
 	}
 
 	LPCTSTR CContainerUI::GetClass() const
@@ -127,8 +133,14 @@ namespace DuiLib
 	void CContainerUI::RemoveAll()
 	{
 		for( int it = 0; m_bAutoDestroy && it < m_items.GetSize(); it++ ) {
-			if( m_bDelayedDestroy && m_pManager ) m_pManager->AddDelayedCleanup(static_cast<CControlUI*>(m_items[it]));             
-			else delete static_cast<CControlUI*>(m_items[it]);
+			CControlUI* pItem = static_cast<CControlUI*>(m_items[it]);
+			if( m_bDelayedDestroy && m_pManager ) {
+				m_pManager->AddDelayedCleanup(pItem);             
+			}
+			else {
+				delete pItem;
+				pItem = NULL;
+			}
 		}
 		m_items.Empty();
 		NeedUpdate();
@@ -156,7 +168,7 @@ namespace DuiLib
 
 	RECT CContainerUI::GetInset() const
 	{
-		return m_rcInset;
+		return GetManager()->GetDPIObj()->Scale(m_rcInset);
 	}
 
 	void CContainerUI::SetInset(RECT rcInset)
@@ -167,7 +179,7 @@ namespace DuiLib
 
 	int CContainerUI::GetChildPadding() const
 	{
-		return m_iChildPadding;
+		return GetManager()->GetDPIObj()->Scale(m_iChildPadding);
 	}
 
 	void CContainerUI::SetChildPadding(int iPadding)
@@ -412,14 +424,13 @@ namespace DuiLib
 
 	int CContainerUI::GetScrollStepSize() const
 	{
-		return m_nScrollStepSize;
+		return GetManager()->GetDPIObj()->Scale(m_nScrollStepSize);
 	}
 
 	void CContainerUI::LineUp()
 	{
-		int cyLine = m_nScrollStepSize;
-		if (m_nScrollStepSize == 0)
-		{
+		int cyLine = GetScrollStepSize();
+		if (cyLine == 0) {
 			cyLine = 8;
 			if( m_pManager ) cyLine = m_pManager->GetDefaultFontInfo()->tm.tmHeight + 8;
 		}
@@ -431,9 +442,8 @@ namespace DuiLib
 
 	void CContainerUI::LineDown()
 	{
-		int cyLine = m_nScrollStepSize;
-		if (m_nScrollStepSize == 0)
-		{
+		int cyLine = GetScrollStepSize();
+		if (cyLine == 0) {
 			cyLine = 8;
 			if( m_pManager ) cyLine = m_pManager->GetDefaultFontInfo()->tm.tmHeight + 8;
 		}
@@ -477,7 +487,8 @@ namespace DuiLib
 
 	void CContainerUI::LineLeft()
 	{
-		int cxLine = m_nScrollStepSize == 0 ? 8 : m_nScrollStepSize;
+		int nScrollStepSize = GetScrollStepSize();
+		int cxLine = nScrollStepSize == 0 ? 8 : nScrollStepSize;
 
 		SIZE sz = GetScrollPos();
 		sz.cx -= cxLine;
@@ -486,7 +497,8 @@ namespace DuiLib
 
 	void CContainerUI::LineRight()
 	{
-		int cxLine = m_nScrollStepSize == 0 ? 8 : m_nScrollStepSize;
+		int nScrollStepSize = GetScrollStepSize();
+		int cxLine = nScrollStepSize == 0 ? 8 : nScrollStepSize;
 
 		SIZE sz = GetScrollPos();
 		sz.cx += cxLine;
@@ -812,11 +824,12 @@ namespace DuiLib
 		CControlUI::DoPaint(hDC, rcPaint);
 
 		if( m_items.GetSize() > 0 ) {
+			RECT rcInset = GetInset();
 			RECT rc = m_rcItem;
-			rc.left += m_rcInset.left;
-			rc.top += m_rcInset.top;
-			rc.right -= m_rcInset.right;
-			rc.bottom -= m_rcInset.bottom;
+			rc.left += rcInset.left;
+			rc.top += rcInset.top;
+			rc.right -= rcInset.right;
+			rc.bottom -= rcInset.bottom;
 			if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
 			if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 
@@ -881,10 +894,10 @@ namespace DuiLib
 		LONG width = m_rcItem.right - m_rcItem.left;
 		LONG height = m_rcItem.bottom - m_rcItem.top;
 		RECT rcCtrl = { 0 };
-		rcCtrl.left = (LONG)(width*rcPercent.left) + szXY.cx;
-		rcCtrl.top = (LONG)(height*rcPercent.top) + szXY.cy;
-		rcCtrl.right = (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
-		rcCtrl.bottom = (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
+		rcCtrl.left = (LONG)(width*rcPercent.left) + szXY.cx+ m_rcItem.left;
+		rcCtrl.top = (LONG)(height*rcPercent.top) + szXY.cy+ m_rcItem.top;
+		rcCtrl.right = (LONG)(width*rcPercent.right) + szXY.cx + sz.cx+ m_rcItem.left;
+		rcCtrl.bottom = (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy+ m_rcItem.top;
 		pControl->SetPos(rcCtrl, false);
 	}
 

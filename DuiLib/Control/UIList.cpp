@@ -17,7 +17,7 @@ namespace DuiLib {
 
 		m_ListInfo.nColumns = 0;
 		m_ListInfo.nFont = -1;
-		m_ListInfo.uTextStyle = DT_VCENTER; // m_uTextStyle(DT_VCENTER | DT_END_ELLIPSIS)
+		m_ListInfo.uTextStyle = DT_VCENTER | DT_SINGLELINE;
 		m_ListInfo.dwTextColor = 0xFF000000;
 		m_ListInfo.dwBkColor = 0;
 		m_ListInfo.bAlternateBk = false;
@@ -420,13 +420,14 @@ namespace DuiLib {
 
 	bool CListUI::SelectItem(int iIndex, bool bTakeFocus)
 	{
+		// 取消所有选择项
+		UnSelectAllItems();
+		// 判断是否合法列表项
 		if( iIndex < 0 ) return false;
 		CControlUI* pControl = GetItemAt(iIndex);
 		if( pControl == NULL ) return false;
 		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 		if( pListItem == NULL ) return false;
-
-		UnSelectAllItems();
 		if( !pListItem->Select(true) ) {
 			return false;
 		}
@@ -434,7 +435,6 @@ namespace DuiLib {
 		m_iCurSel = iIndex;
 		m_aSelItems.Add((LPVOID)iIndex);
 		EnsureVisible(iIndex);
-
 		if( bTakeFocus ) pControl->SetFocus();
 		if( m_pManager != NULL && iLastSel != m_iCurSel) {
 			m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMSELECT, iIndex);
@@ -485,7 +485,6 @@ namespace DuiLib {
 				if(iSelIndex == iIndex) continue;
 				CControlUI* pControl = GetItemAt(iSelIndex);
 				if(pControl == NULL) continue;
-				if(!pControl->IsVisible()) continue;
 				if(!pControl->IsEnabled()) continue;
 				IListItemUI* pSelListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 				if( pSelListItem == NULL ) continue;
@@ -497,11 +496,9 @@ namespace DuiLib {
 			if( iIndex < 0 ) return false;
 			CControlUI* pControl = GetItemAt(iIndex);
 			if( pControl == NULL ) return false;
-			if( !pControl->IsVisible() ) return false;
 			if( !pControl->IsEnabled() ) return false;
 			IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 			if( pListItem == NULL ) return false;
-
 			int aIndex = m_aSelItems.Find((LPVOID)iIndex);
 			if (aIndex < 0) return false;
 			if( !pListItem->SelectMulti(false) ) return false;
@@ -533,7 +530,6 @@ namespace DuiLib {
 			int iSelIndex = (int)m_aSelItems.GetAt(i);
 			CControlUI* pControl = GetItemAt(iSelIndex);
 			if(pControl == NULL) continue;
-			if(!pControl->IsVisible()) continue;
 			if(!pControl->IsEnabled()) continue;
 			IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 			if( pListItem == NULL ) continue;
@@ -608,7 +604,9 @@ namespace DuiLib {
 
 	RECT CListUI::GetItemTextPadding() const
 	{
-		return m_ListInfo.rcTextPadding;
+		RECT rect = m_ListInfo.rcTextPadding;
+		GetManager()->GetDPIObj()->Scale(&rect);
+		return rect;
 	}
 
 	void CListUI::SetItemTextColor(DWORD dwTextColor)
@@ -873,6 +871,20 @@ namespace DuiLib {
 				m_ListInfo.uTextStyle |= DT_RIGHT;
 			}
 		}
+		else if( _tcsicmp(pstrName, _T("itemvalign")) == 0 ) {
+			if( _tcsstr(pstrValue, _T("top")) != NULL ) {
+				m_ListInfo.uTextStyle &= ~(DT_VCENTER | DT_BOTTOM);
+				m_ListInfo.uTextStyle |= DT_TOP;
+			}
+			if( _tcsstr(pstrValue, _T("vcenter")) != NULL ) {
+				m_ListInfo.uTextStyle &= ~(DT_TOP | DT_BOTTOM);
+				m_ListInfo.uTextStyle |= DT_VCENTER;
+			}
+			if( _tcsstr(pstrValue, _T("bottom")) != NULL ) {
+				m_ListInfo.uTextStyle &= ~(DT_TOP | DT_VCENTER);
+				m_ListInfo.uTextStyle |= DT_BOTTOM;
+			}
+		}
 		else if( _tcsicmp(pstrName, _T("itemendellipsis")) == 0 ) {
 			if( _tcsicmp(pstrValue, _T("true")) == 0 ) m_ListInfo.uTextStyle |= DT_END_ELLIPSIS;
 			else m_ListInfo.uTextStyle &= ~DT_END_ELLIPSIS;
@@ -1107,6 +1119,13 @@ namespace DuiLib {
 		CControlUI *pControl1 = *(CControlUI**)item1;
 		CControlUI *pControl2 = *(CControlUI**)item2;
 		return m_pCompareFunc((UINT_PTR)pControl1, (UINT_PTR)pControl2, m_compareData);
+	}
+
+	int CListBodyUI::GetScrollStepSize() const
+	{
+		if(m_pOwner != NULL) return m_pOwner->GetScrollStepSize();
+
+		return CVerticalLayoutUI::GetScrollStepSize();
 	}
 
 	void CListBodyUI::SetScrollPos(SIZE szPos, bool bMsg)
@@ -1834,19 +1853,19 @@ namespace DuiLib {
 
 		if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
 			if( m_sPushedImage.IsEmpty() && !m_sNormalImage.IsEmpty() ) DrawImage(hDC, (LPCTSTR)m_sNormalImage);
-			if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) m_sPushedImage.Empty();
+			if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) {}
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
 			if( m_sHotImage.IsEmpty() && !m_sNormalImage.IsEmpty() ) DrawImage(hDC, (LPCTSTR)m_sNormalImage);
-			if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
+			if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) {}
 		}
 		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
 			if( m_sFocusedImage.IsEmpty() && !m_sNormalImage.IsEmpty() ) DrawImage(hDC, (LPCTSTR)m_sNormalImage);
-			if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
+			if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) {}
 		}
 		else {
 			if( !m_sNormalImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) {}
 			}
 		}
 
@@ -1859,7 +1878,7 @@ namespace DuiLib {
 
 			m_sSepImageModify.Empty();
 			m_sSepImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
-			if( !DrawImage(hDC, (LPCTSTR)m_sSepImage, (LPCTSTR)m_sSepImageModify) ) m_sSepImage.Empty();
+			if( !DrawImage(hDC, (LPCTSTR)m_sSepImage, (LPCTSTR)m_sSepImageModify) ) {}
 		}
 	}
 
@@ -1878,10 +1897,10 @@ namespace DuiLib {
 		int nLinks = 0;
 		if( m_bShowHtml )
 			CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, sText, m_dwTextColor, \
-			NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
+			NULL, NULL, nLinks, m_uTextStyle);
 		else
 			CRenderEngine::DrawText(hDC, m_pManager, rcText, sText, m_dwTextColor, \
-			m_iFont, DT_SINGLELINE | m_uTextStyle);
+			m_iFont, m_uTextStyle);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -2101,32 +2120,32 @@ namespace DuiLib {
 
 		if( !IsEnabled() ) {
 			if( !pInfo->sDisabledImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sDisabledImage) ) pInfo->sDisabledImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sDisabledImage) ) {}
 				else return;
 			}
 		}
 		if( IsSelected() ) {
 			if( !pInfo->sSelectedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sSelectedImage) ) pInfo->sSelectedImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sSelectedImage) ) {}
 				else return;
 			}
 		}
 		if( (m_uButtonState & UISTATE_HOT) != 0 ) {
 			if( !pInfo->sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sHotImage) ) pInfo->sHotImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sHotImage) ) {}
 				else return;
 			}
 		}
 
 		if( !m_sBkImage.IsEmpty() ) {
 			if( !pInfo->bAlternateBk || m_iIndex % 2 == 0 ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) m_sBkImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) {}
 			}
 		}
 
 		if( m_sBkImage.IsEmpty() ) {
 			if( !pInfo->sBkImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) pInfo->sBkImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) {}
 				else return;
 			}
 		}
@@ -2277,10 +2296,10 @@ namespace DuiLib {
 
 		if( pInfo->bShowHtml )
 			CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, sText, iTextColor, \
-			NULL, NULL, nLinks, DT_SINGLELINE | pInfo->uTextStyle);
+			NULL, NULL, nLinks, pInfo->uTextStyle);
 		else
 			CRenderEngine::DrawText(hDC, m_pManager, rcText, sText, iTextColor, \
-			pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
+			pInfo->nFont, pInfo->uTextStyle);
 	}
 
 
@@ -2455,10 +2474,10 @@ namespace DuiLib {
 
 			if( pInfo->bShowHtml )
 				CRenderEngine::DrawHtmlText(hDC, m_pManager, rcItem, strText.GetData(), iTextColor, \
-				&m_rcLinks[m_nLinks], &m_sLinks[m_nLinks], nLinks, DT_SINGLELINE | pInfo->uTextStyle);
+				&m_rcLinks[m_nLinks], &m_sLinks[m_nLinks], nLinks, pInfo->uTextStyle);
 			else
 				CRenderEngine::DrawText(hDC, m_pManager, rcItem, strText.GetData(), iTextColor, \
-				pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
+				pInfo->nFont, pInfo->uTextStyle);
 
 			m_nLinks += nLinks;
 			nLinks = lengthof(m_rcLinks) - m_nLinks; 
@@ -2811,31 +2830,31 @@ namespace DuiLib {
 
 		if( !IsEnabled() ) {
 			if( !pInfo->sDisabledImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sDisabledImage) ) pInfo->sDisabledImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sDisabledImage) ) {}
 				else return;
 			}
 		}
 		if( IsSelected() ) {
 			if( !pInfo->sSelectedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sSelectedImage) ) pInfo->sSelectedImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sSelectedImage) ) {}
 				else return;
 			}
 		}
 		if( (m_uButtonState & UISTATE_HOT) != 0 ) {
 			if( !pInfo->sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sHotImage) ) pInfo->sHotImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sHotImage) ) {}
 				else return;
 			}
 		}
 		if( !m_sBkImage.IsEmpty() ) {
 			if( !pInfo->bAlternateBk || m_iIndex % 2 == 0 ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) m_sBkImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) {}
 			}
 		}
 
 		if( m_sBkImage.IsEmpty() ) {
 			if( !pInfo->sBkImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) pInfo->sBkImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) {}
 				else return;
 			}
 		}

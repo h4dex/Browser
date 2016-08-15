@@ -5,6 +5,6 @@
 ## Browser(CEF浏览器)
   CEF浏览器是DuiLib+CEF的演示用的程序，含Flash PPAPI插件与获取本地计算机名称的演示。
 
-## libcef_dll
-  CEF 3.2556.1368.g535c4fb<br />
-  Chromium 48.0.2556.0<br />
+## CEF3(libcef_dll)
+  CEF Version:      3.2743.1444.g7c94121<br />
+  Chromium Verison: 52.0.2743.116<br />

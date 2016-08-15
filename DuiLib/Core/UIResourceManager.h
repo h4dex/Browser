@@ -1,6 +1,5 @@
 #ifndef __UIRESOURCEMANAGER_H__
 #define __UIRESOURCEMANAGER_H__
-
 #pragma once
 
 namespace DuiLib {
@@ -35,12 +34,15 @@ namespace DuiLib {
 	public:
 		void SetLanguage(LPCTSTR pstrLanguage) { m_sLauguage = pstrLanguage; }
 		LPCTSTR GetLanguage() { return m_sLauguage; }
-
+		BOOL LoadLanguage(LPCTSTR pstrXml);
+		
 	public:
 		void SetTextQueryInterface(IQueryControlText* pInterface) { m_pQuerypInterface = pInterface; }
 		CDuiString GetText(LPCTSTR lpstrId, LPCTSTR lpstrType = NULL);
 		void ReloadText();
 		void ResetTextMap();
+
+	
 
 	private:
 		CStdStringPtrMap m_mTextResourceHashMap;
@@ -49,6 +51,9 @@ namespace DuiLib {
 		CStdStringPtrMap m_mXmlHashMap;
 		CMarkup m_xml;
 		CDuiString m_sLauguage;
+		CStdStringPtrMap m_mTextHashMap;
+
+		
 	};
 
 } // namespace DuiLib

@@ -19,6 +19,7 @@ CBrowserHandler::CBrowserHandler(CBrowserDlg* pWindow)
 	, m_pWindow(pWindow)
 	, m_BrowserId(0)
 	, m_hParentHandle(NULL)
+	, m_Cookie(NULL)
 {
 	CreateProcessMessageDelegates(m_process_message_delegates);
 	CreateRequestDelegates(m_request_delegates);
@@ -257,8 +258,10 @@ void CBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 	}
 }
 
-void CBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
-	CefRefPtr<CefFrame> frame)
+void CBrowserHandler::OnLoadStart(
+	CefRefPtr<CefBrowser> browser,
+	CefRefPtr<CefFrame> frame,
+	TransitionType transition_type)
 {
 	CEF_REQUIRE_UI_THREAD();
 

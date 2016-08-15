@@ -33,6 +33,8 @@ namespace DuiLib
 		rc = m_rcItem;
 
 		// Adjust for inset
+		RECT m_rcInset = CVerticalLayoutUI::m_rcInset;
+		GetManager()->GetDPIObj()->Scale(&m_rcInset);
 		rc.left += m_rcInset.left;
 		rc.top += m_rcInset.top;
 		rc.right -= m_rcInset.right;
@@ -101,6 +103,7 @@ namespace DuiLib
 			iPosY -= m_pVerticalScrollBar->GetScrollPos();
 		}
 
+		int iEstimate = 0;
 		int iAdjustable = 0;
 		int cyFixedRemaining = cyFixed;
 		for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
@@ -111,6 +114,7 @@ namespace DuiLib
 				continue;
 			}
 
+			iEstimate += 1;
 			RECT rcPadding = pControl->GetPadding();
 			szRemaining.cy -= rcPadding.top;
 
@@ -122,6 +126,8 @@ namespace DuiLib
 			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
+      cyFixedRemaining = cyFixedRemaining - (rcPadding.top + rcPadding.bottom);
+			if (iEstimate > 1) cyFixedRemaining = cyFixedRemaining - m_iChildPadding;
 			SIZE sz = pControl->EstimateSize(szControlAvailable);
 			if( sz.cy == 0 ) {
 				iAdjustable++;

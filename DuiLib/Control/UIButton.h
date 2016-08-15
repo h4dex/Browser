@@ -20,18 +20,18 @@ namespace DuiLib
 		void SetEnabled(bool bEnable = true);
 		void DoEvent(TEventUI& event);
 
-		LPCTSTR GetNormalImage();
-		void SetNormalImage(LPCTSTR pStrImage);
-		LPCTSTR GetHotImage();
-		void SetHotImage(LPCTSTR pStrImage);
-		LPCTSTR GetPushedImage();
-		void SetPushedImage(LPCTSTR pStrImage);
-		LPCTSTR GetFocusedImage();
-		void SetFocusedImage(LPCTSTR pStrImage);
-		LPCTSTR GetDisabledImage();
-		void SetDisabledImage(LPCTSTR pStrImage);
-		LPCTSTR GetHotForeImage();
-		void SetHotForeImage(LPCTSTR pStrImage);
+		virtual LPCTSTR GetNormalImage();
+		virtual void SetNormalImage(LPCTSTR pStrImage);
+		virtual LPCTSTR GetHotImage();
+		virtual void SetHotImage(LPCTSTR pStrImage);
+		virtual LPCTSTR GetPushedImage();
+		virtual void SetPushedImage(LPCTSTR pStrImage);
+		virtual LPCTSTR GetFocusedImage();
+		virtual void SetFocusedImage(LPCTSTR pStrImage);
+		virtual LPCTSTR GetDisabledImage();
+		virtual void SetDisabledImage(LPCTSTR pStrImage);
+		virtual LPCTSTR GetHotForeImage();
+		virtual void SetHotForeImage(LPCTSTR pStrImage);
 
 		void BindTabIndex(int _BindTabIndex);
 		void BindTabLayoutName(LPCTSTR _TabLayoutName);
@@ -50,11 +50,13 @@ namespace DuiLib
 		DWORD GetPushedTextColor() const;
 		void SetFocusedTextColor(DWORD dwColor);
 		DWORD GetFocusedTextColor() const;
-		//SIZE EstimateSize(SIZE szAvailable);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 		void PaintText(HDC hDC);
+
+		void PaintBkColor(HDC hDC);
 		void PaintStatusImage(HDC hDC);
+		void PaintForeImage(HDC hDC);
 
 	protected:
 		UINT m_uButtonState;

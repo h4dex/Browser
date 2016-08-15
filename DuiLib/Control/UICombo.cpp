@@ -302,7 +302,7 @@ namespace DuiLib {
 	{
 		return false;
 	}
-
+		
 	bool CComboUI::SetItemIndex(CControlUI* pControl, int iIndex)
 	{
 		int iOrginIndex = GetItemIndex(pControl);
@@ -966,6 +966,10 @@ namespace DuiLib {
 				m_ListInfo.uTextStyle |= DT_RIGHT;
 			}
 		}
+		else if( _tcsicmp(pstrName, _T("itemendellipsis")) == 0 ) {
+			if( _tcsicmp(pstrValue, _T("true")) == 0 ) m_ListInfo.uTextStyle |= DT_END_ELLIPSIS;
+			else m_ListInfo.uTextStyle &= ~DT_END_ELLIPSIS;
+		}   
 		else if( _tcsicmp(pstrName, _T("itemtextpadding")) == 0 ) {
 			RECT rcTextPadding = { 0 };
 			LPTSTR pstr = NULL;
@@ -1052,31 +1056,31 @@ namespace DuiLib {
 
 		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
 			if( !m_sDisabledImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) {}
 				else return;
 			}
 		}
 		else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
 			if( !m_sPushedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) m_sPushedImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) {}
 				else return;
 			}
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
 			if( !m_sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) {}
 				else return;
 			}
 		}
 		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
 			if( !m_sFocusedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) {}
 				else return;
 			}
 		}
 
 		if( !m_sNormalImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
+			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) {}
 			else return;
 		}
 	}
@@ -1097,19 +1101,15 @@ namespace DuiLib {
 		int nLinks = 0;
 		if( IsEnabled() ) {
 			if( m_bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, sText, m_dwTextColor, \
-				NULL, NULL, nLinks, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, sText, m_dwTextColor, NULL, NULL, nLinks, m_uTextStyle);
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
-				m_iFont, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
+				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, m_iFont, m_uTextStyle);
 		}
 		else {
 			if( m_bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
-				NULL, NULL, nLinks, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, NULL, NULL, nLinks, m_uTextStyle);
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
-				m_iFont, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
+				CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, m_iFont, m_uTextStyle);
 		}
 	}
 

@@ -159,6 +159,11 @@ namespace DuiLib
 		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ){
 			m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
 		}
+		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_TAB ){
+			if (m_pOwner->GetManager()->IsLayered()) {
+				m_pOwner->GetManager()->SetNextTabControl();
+			}
+		}
 		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
@@ -635,25 +640,25 @@ namespace DuiLib
 
 		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
 			if( !m_sDisabledImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) {}
 				else return;
 			}
 		}
 		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
 			if( !m_sFocusedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) {}
 				else return;
 			}
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
 			if( !m_sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) {}
 				else return;
 			}
 		}
 
 		if( !m_sNormalImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
+			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) {}
 			else return;
 		}
 	}

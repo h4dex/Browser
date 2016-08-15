@@ -42,11 +42,15 @@
 #include <gdiplus.h>
 
 #include "Utils/Utils.h"
+#include "Utils/VersionHelpers.h"
 #include "Core/UIMarkup.h"
 #include "Utils/observer_impl_base.h"
 #include "Utils/UIShadow.h"
 #include "Utils/UIDelegate.h"
 #include "Utils/DragDropImpl.h"
+#include "Utils/TrayIcon.h"
+#include "Utils/DPI.h"
+
 #include "Core/UIDefine.h"
 #include "Core/UIResourceManager.h"
 #include "Core/UIManager.h"
@@ -74,7 +78,10 @@
 #include "Control/UIText.h"
 #include "Control/UIEdit.h"
 #include "Control/UIGifAnim.h"
+#include "Control/UIGifAnimEx.h"
 
+#include "Control/UIAnimation.h"
+#include "Layout/UIAnimationTabLayout.h"
 #include "Control/UIButton.h"
 #include "Control/UIOption.h"
 
@@ -87,11 +94,16 @@
 #include "Control/UIIPAddress.h"
 
 #include "Control/UIActiveX.h"
+#include "Control/UIWebBrowser.h"
+#include "Control/UIFlash.h"
 
 #include "Control/UIMenu.h"
 #include "Control/UIGroupBox.h"
-#include "Control/RollTextUI.h"
+#include "Control/UIRollText.h"
+#include "Control/UIColorPalette.h"
 #include "Control/UIListEx.h"
+#include "Control/UIHotKey.h"
+#include "Control/UIFadeButton.h"
 
 #pragma comment( lib, "comctl32.lib" )
 #pragma comment( lib, "GdiPlus.lib" )
