@@ -100,6 +100,12 @@ void CBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
 	bool canGoBack,
 	bool canGoForward)
 {
+	CEF_REQUIRE_UI_THREAD();
+
+	if (m_BrowserId == browser->GetIdentifier() && m_pWindow != NULL)
+	{
+		m_pWindow->SetLoadingState(isLoading, canGoBack, canGoForward);
+	}
 }
 
 void CBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,

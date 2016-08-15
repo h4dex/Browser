@@ -64,6 +64,8 @@ CBrowserDlg::CBrowserDlg(BOOL bPopup,LPCTSTR sUrl)
 {
 	labTitle = NULL;
 	uiToolbar = NULL;
+	btnBackward = NULL;
+	btnForward = NULL;
 	editUrl = NULL;
 	editKeyword = NULL;
 	m_bPopup = bPopup;
@@ -92,6 +94,8 @@ void CBrowserDlg::InitWindow()
 	SetIcon(IDR_MAINFRAME);
 	labTitle = static_cast<CLabelUI*>(m_pm.FindControl(_T("labTitle")));
 	uiToolbar = static_cast<CControlUI*>(m_pm.FindControl(_T("uiToolbar")));
+	btnBackward = static_cast<CButtonUI*>(m_pm.FindControl(_T("btnBackward")));
+	btnForward = static_cast<CButtonUI*>(m_pm.FindControl(_T("btnForward")));
 	editUrl = static_cast<CEditUI*>(m_pm.FindControl(_T("editUrl")));
 	editKeyword = static_cast<CEditUI*>(m_pm.FindControl(_T("editKeyword")));
 	mBrowser = static_cast<CBrowserUI*>(m_pm.FindControl(_T("mBrowser")));
@@ -102,6 +106,10 @@ void CBrowserDlg::InitWindow()
 	}
 	if(m_bPopup)
 		uiToolbar->SetVisible(false);
+	if(btnBackward)
+		btnBackward->SetEnabled(false);
+	if(btnForward)
+		btnForward->SetEnabled(false);
 }
 
 void CBrowserDlg::OnFinalMessage(HWND hWnd)
@@ -200,6 +208,16 @@ void CBrowserDlg::Notify(TNotifyUI& msg)
 				mBrowser->LoadURL(sUrl.GetData());
 			}
 			return;
+		}else if (_tcsicmp(sCtrlName,_T("btnBackward")) == 0){
+			if(mBrowser){
+				mBrowser->GetBrowser()->GoBack();
+			}
+			return;
+		}else if (_tcsicmp(sCtrlName,_T("btnForward")) == 0){
+			if(mBrowser){
+				mBrowser->GetBrowser()->GoForward();
+			}
+			return;
 		}
 	}
 	else if (_tcsicmp(msg.sType,DUI_MSGTYPE_RETURN) == 0)
@@ -240,6 +258,14 @@ void CBrowserDlg::SetTitle(LPCTSTR pstrTitle)
 {
 	labTitle->SetText(pstrTitle);
 	SetWindowText(m_hWnd, pstrTitle);
+}
+
+void CBrowserDlg::SetLoadingState(bool isLoading,bool canGoBack,bool canGoForward)
+{
+	if(btnBackward)
+		btnBackward->SetEnabled(canGoBack);
+	if(btnForward)
+		btnForward->SetEnabled(canGoForward);
 }
 
 void CBrowserDlg::Popup(LPCTSTR pstrUrl)
