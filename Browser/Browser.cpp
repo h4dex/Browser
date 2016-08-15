@@ -36,6 +36,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	CefSettings settings;// Specify CEF global settings here.
+	WCHAR szBuffer[MAX_PATH];
+	::ZeroMemory(&szBuffer, sizeof(szBuffer));
+	GetTempPathW(MAX_PATH,szBuffer);
+	std::wstring sBuffer = szBuffer;
+	sBuffer += L"\\Browser";
+	CefString(&settings.cache_path).FromWString(sBuffer);
 	settings.multi_threaded_message_loop=true;	//使用主程序消息循环
 	settings.ignore_certificate_errors = true;	//忽略掉ssl证书验证错误
     //settings.command_line_args_disabled = true;
@@ -104,8 +110,8 @@ void CBrowserDlg::InitWindow()
 		MessageBox(NULL,_T("加载资源文件失败"),_T("Browser"),MB_OK|MB_ICONERROR);
 		return;
 	}
-	if(m_bPopup)
-		uiToolbar->SetVisible(false);
+	//if(m_bPopup)
+	//	uiToolbar->SetVisible(false);
 	if(btnBackward)
 		btnBackward->SetEnabled(false);
 	if(btnForward)
@@ -195,10 +201,20 @@ void CBrowserDlg::Notify(TNotifyUI& msg)
 			}
 			return;
 		}else if (_tcsicmp(sCtrlName,_T("btnMusic")) == 0){//音乐
-			CDuiString sUrl = _T("http://fm.baidu.com");
-			if(mBrowser){
-				editUrl->SetText(sUrl);
-				mBrowser->LoadURL(sUrl.GetData());
+			CDuiString sUrl = _T("http://fm.baidu.com/");
+			if(m_sUrl.CompareNoCase(sHomepage)==0)
+			{
+				if(mBrowser){
+					editUrl->SetText(sUrl);
+					mBrowser->LoadURL(sUrl.GetData());
+				}
+			}
+			else if(m_sUrl.CompareNoCase(sUrl)==0)
+			{
+			}
+			else
+			{
+				Popup(_T("http://fm.baidu.com"));
 			}
 			return;
 		}else if (_tcsicmp(sCtrlName,_T("btnInfo")) == 0){
@@ -251,7 +267,11 @@ void CBrowserDlg::Notify(TNotifyUI& msg)
 
 void CBrowserDlg::SetAddress(LPCTSTR pstrAddress)
 {
-	editUrl->SetText(pstrAddress);
+	if(m_sUrl.CompareNoCase(pstrAddress)!=0)
+	{
+		m_sUrl = pstrAddress;
+		editUrl->SetText(pstrAddress);
+	}
 }
 
 void CBrowserDlg::SetTitle(LPCTSTR pstrTitle)
@@ -281,7 +301,6 @@ void CBrowserDlg::OnPopup()
 	pPopup->Create(NULL,_T("Browser"),UI_WNDSTYLE_FRAME,WS_EX_APPWINDOW,0,0,800,600);
 	pPopup->CenterWindow();
 }
-
 
 LRESULT CBrowserDlg::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
