@@ -115,7 +115,7 @@ void CBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
 	CEF_REQUIRE_UI_THREAD();
 
 	if (m_BrowserId == browser->GetIdentifier()
-		&& frame->IsMain() && m_pWindow != NULL)
+		/*&& frame->IsMain()*/ && m_pWindow != NULL)
 	{
 		m_pWindow->SetAddress(std::wstring(url).c_str());
 	}
