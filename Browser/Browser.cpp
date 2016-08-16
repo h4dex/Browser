@@ -167,15 +167,9 @@ void CBrowserDlg::Notify(TNotifyUI& msg)
 	{
 		if (_tcsicmp(sCtrlName,_T("btnGoto")) == 0){//Ìø×ª
 			if(mBrowser){
-				CDuiString sAddr;
 				CDuiString sUrl = editUrl->GetText();
-				if(sUrl.Find(_T("http://")) >= 0 || sUrl.Find(_T("https://")) >= 0){
-					sAddr = sUrl;
-				}else{
-					sAddr.Format(_T("http://%s"),sUrl.GetData());
-				}
-				editUrl->SetText(sAddr);
-				mBrowser->LoadURL(sAddr.GetData());
+				editUrl->SetText(sUrl);
+				mBrowser->LoadURL(sUrl.GetData());
 			}
 			return;
 		}else if (_tcsicmp(sCtrlName,_T("btnSearch")) == 0){//ËÑË÷
@@ -240,15 +234,9 @@ void CBrowserDlg::Notify(TNotifyUI& msg)
 	{
 		if (_tcsicmp(sCtrlName,_T("editUrl")) == 0){
 			if(mBrowser){
-				CDuiString sAddr;
 				CDuiString sUrl = editUrl->GetText();
-				if(sUrl.Find(_T("http://")) >= 0 || sUrl.Find(_T("https://")) >= 0){
-					sAddr = sUrl;
-				}else{
-					sAddr.Format(_T("http://%s"),sUrl.GetData());
-				}
-				editUrl->SetText(sAddr);
-				mBrowser->LoadURL(sAddr.GetData());
+				editUrl->SetText(sUrl);
+				mBrowser->LoadURL(sUrl.GetData());
 			}
 			return;
 		}else if (_tcsicmp(sCtrlName,_T("editKeyword")) == 0){
